@@ -1,0 +1,10 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: win-64
+defusedxml=0.7.1=pyhd3eb1b0_0
+libxml2=2.10.3=h0ad7f3c_0
+lxml=4.9.2=py310h2bbff1b_0
+pyyaml=6.0=py310h2bbff1b_1
+toml=0.10.2=pyhd3eb1b0_0
+tomli=2.0.1=py310haa95532_0
+yaml=0.2.5=he774522_0
