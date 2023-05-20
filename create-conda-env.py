@@ -1,19 +1,16 @@
 import os
 import subprocess
-import json
-
 
 # check conda environment exists
 def verify_conda_env(env_name):
   """Verifies the environment exists."""
   env_list = subprocess.check_output('conda env list', shell=True)
-  if env_name in env_list.decode():
-    print('{} is in the environment list'.format(env_name))
+  if env_name in env_list.decode().split():
     return True
 
 def get_conda_package_list(env_name):
   """Gets the list of packages installed in the specified conda environment."""
-  cmd = ["conda", "list", "--export", env_name]
+  cmd = ["conda", "list", "--explicit", '--name ' + env_name]
   output = subprocess.check_output(cmd).decode("utf-8")
   return output.splitlines()
 
@@ -56,16 +53,11 @@ def build_conda_environment(requirements_file_path, env_name):
   # Install conda ml environment with requirements.txt packages
   cmd = 'conda create -y --name ' + env_name + ' --file ' + requirements_file_path 
   os.system(cmd)
-  # Activate conda ml environment
-  os.system('conda activate ' + env_name)
   
 def install_conda_requirements(requirements_file_path, env_name):
   """Install conda packages to environment based off requirements file"""
   cmd = 'conda install -y --name ' + env_name + ' --file ' + requirements_file_path
-  os.system(cmd)
-  
-  # Activate conda ml environment
-  os.system('conda activate ' + env_name)
+  os.system(cmd)  
 
 if __name__ == "__main__":
 
@@ -78,15 +70,17 @@ if __name__ == "__main__":
   
   # verify if conda environment exists
   if verify_conda_env(env_name=env_name):
+    
     # Get the list of packages installed in the conda environment and the list of packages in the requirements file.
     conda_list = get_conda_package_list(env_name)
     requirements_list = get_requirements_file_list(requirements_file_path)
-  
-    print(type(conda_list))
-    print(type(requirements_list))
-    print("Conda list: {}".format(conda_list))
-    print("Requirements list: {}".format(requirements_list))
-  
+    
+    # Used for debugging only   
+    #print(type(conda_list))
+    #print(type(requirements_list))
+    #print("Conda list: {}".format(conda_list))
+    #print("Requirements list: {}".format(requirements_list))
+    #print('{} is in the environment list'.format(env_name))
 
     # Compare the two lists of packages and print the differences.
     differences = compare_package_lists(conda_list, requirements_list)
@@ -96,8 +90,8 @@ if __name__ == "__main__":
         print(f"{package} ({source})")
       install_conda_requirements(requirements_file_path=requirements_file_path, env_name=env_name)
     else:
-      print("The conda environment and the requirements file are identical.")
-  
+      print("The conda environment ({}) packages and the requirements file are identical.".format(env_name))
   else: 
+    print("The conda environment ({}) does not exist and will be created.".format(env_name))
     # If the environment doesn't exist at all, build environment
     build_conda_environment(requirements_file_path=requirements_file_path, env_name=env_name)
